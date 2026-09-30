@@ -1,0 +1,226 @@
+ESP8266 TALKING RADIO - EXACT CONNECTION WIRING
+================================================
+
+This wiring is based on the actual boards in your photos:
+
+  1. NodeMCU ESP8266 Lua board
+  2. Purple GY-PCM5102 DAC board
+  3. Green PAM8403 amplifier with volume knob
+  4. One speaker
+  5. 1000 uF / 10 V electrolytic capacitor
+  6. Loose three-pin IR receiver
+
+
+IMPORTANT BEFORE STARTING
+-------------------------
+
+1. Disconnect USB and all power while making or changing wires.
+
+2. For the first test, use a good 5 V USB adapter rated for at least 2 A.
+
+3. Do not connect any part of this circuit to the old radio's mains wiring.
+
+4. The PAM8403 speaker outputs are bridge outputs. Neither speaker wire may
+   connect to GND.
+
+5. Do not connect the PAM8403 right and left outputs together.
+
+6. The purple PCM5102 pin marked A3V3/3V3 is an onboard 3.3 V regulator
+   output. When PCM5102 VIN is powered from 5 V, leave A3V3 unconnected.
+
+7. The IR receiver model number is not readable in the supplied photo.
+   Do not connect it until its pin order is confirmed.
+
+
+PART A - NODEMCU TO PCM5102 DIGITAL AUDIO WIRES
+-----------------------------------------------
+
+NodeMCU pin              Connect to PCM5102 pin
+----------------------   -------------------------
+D4 (GPIO2)               LCK
+D8 (GPIO15)              BCK
+RX (GPIO3)               DIN
+G (any GND pin)          GND
+VU (USB 5 V)             VIN
+G (any GND pin)          SCK
+3V (3.3 V pin)           XSMT
+G (any GND pin)          FLT
+G (any GND pin)          DEMP
+G (any GND pin)          FMT
+
+PCM5102 pins that remain unconnected:
+
+  A3V3 / 3V3
+  ROUT
+  the AGND beside ROUT
+  the 3.5 mm headphone/line socket
+
+The PCM5102 has two AGND pins. Use the AGND beside the top analog output marked
+LOUT/LROUT for the amplifier audio-ground connection described in Part B.
+
+Notes:
+
+  - Use the printed labels on the PCM5102 board. Do not count positions from
+    the photograph.
+  - SCK is not the same pin as BCK. SCK goes to GND; BCK goes to NodeMCU D8.
+  - RX is used as digital audio output. This is correct for ESP8266 I2S.
+
+
+PART B - PCM5102 TO PAM8403 AUDIO INPUT
+---------------------------------------
+
+On your PAM8403 board, the three input holes beside the top of the right edge
+are marked R, G and L.
+
+PCM5102 pin              Connect to PAM8403 pin
+----------------------   -------------------------
+LOUT/LROUT               L (audio input)
+AGND beside LOUT/LROUT   G (audio input ground)
+
+Leave the PAM8403 input marked R unconnected because only the left channel and
+one speaker are being used.
+
+Use short wires for LOUT/LROUT and AGND. If possible, twist these two wires
+together.
+
+
+PART C - PAM8403 POWER
+----------------------
+
+Your PAM8403 has a two-hole POWER group marked + and -.
+
+NodeMCU pin              Connect to PAM8403
+----------------------   -------------------------
+VU (USB 5 V)             POWER +
+G (any GND pin)          POWER -
+
+This VU method is for a first low-volume test using a good 5 V / 2 A USB
+adapter connected to the NodeMCU micro-USB socket.
+
+For the final installation, the better arrangement is to split the regulated
+5 V supply directly:
+
+  5 V supply +  -> NodeMCU VIN or micro-USB 5 V
+  5 V supply +  -> PCM5102 VIN
+  5 V supply +  -> PAM8403 POWER +
+
+  5 V supply -  -> NodeMCU G
+  5 V supply -  -> PCM5102 GND
+  5 V supply -  -> PAM8403 POWER -
+
+Do not connect two different 5 V power supplies at the same time.
+
+
+PART D - 1000 uF / 10 V CAPACITOR
+---------------------------------
+
+Capacitor lead           Connect to PAM8403
+----------------------   -------------------------
+Positive lead (+)        POWER +
+Negative lead (-)        POWER -
+
+The negative side is identified by the stripe containing minus (-) symbols on
+the capacitor body. Because the leads may have been cut, do not identify
+polarity only by which lead is longer.
+
+Install this capacitor close to the PAM8403 power holes.
+
+Never reverse this capacitor. A reversed electrolytic capacitor can heat,
+leak, or burst.
+
+
+PART E - ONE SPEAKER
+--------------------
+
+Use only the two PAM8403 holes printed as the LOUT output pair.
+
+Speaker wire 1           PAM8403 LOUT +
+Speaker wire 2           PAM8403 LOUT -
+
+With one speaker, reversing these two speaker wires changes only acoustic
+polarity; it will not stop the speaker from working.
+
+Never connect either LOUT speaker wire to GND.
+
+Leave both PAM8403 ROUT output holes empty.
+
+If the sound-box cable has four loose wires, do not join all four. With power
+disconnected, use a multimeter in resistance mode to identify the pair that
+measures approximately 2.7 ohms. Use only that matched pair for the first test.
+
+If the speaker LABEL says 4 ohms but the multimeter reads approximately
+2.7 ohms, it is normally a 4-ohm nominal speaker. If the label itself says
+2.7 or 3 ohms, keep the volume low and preferably place a 1 to 1.5 ohm,
+2-watt resistor in series with one speaker wire.
+
+
+PART F - IR RECEIVER - WAIT FOR IDENTIFICATION
+----------------------------------------------
+
+The photograph shows a bare three-pin IR receiver, but no readable model
+number or pin names. VS1838B, TSOP, TL1838 and similar-looking receivers do not
+all use the same left-to-right pin order.
+
+The final functions will be:
+
+IR receiver function     NodeMCU connection
+----------------------   -------------------------
+SIGNAL / OUT             D5 (GPIO14)
+GND                      G
+VCC                      3V (3.3 V)
+
+DO NOT choose which physical IR leg is SIGNAL, GND or VCC yet.
+
+Before connecting it, provide one sharp close-up photograph of:
+
+  - the flat face of the IR receiver showing any printed letters/numbers, and
+  - the opposite face, with the three legs separated and visible.
+
+Connecting VCC and GND to the wrong legs can permanently damage the receiver.
+
+
+COMPLETE WIRE CHECKLIST
+-----------------------
+
+[ ] NodeMCU D4       -> PCM5102 LCK
+[ ] NodeMCU D8       -> PCM5102 BCK
+[ ] NodeMCU RX       -> PCM5102 DIN
+[ ] NodeMCU G        -> PCM5102 GND
+[ ] NodeMCU VU       -> PCM5102 VIN
+[ ] NodeMCU G        -> PCM5102 SCK
+[ ] NodeMCU 3V       -> PCM5102 XSMT
+[ ] NodeMCU G        -> PCM5102 FLT
+[ ] NodeMCU G        -> PCM5102 DEMP
+[ ] NodeMCU G        -> PCM5102 FMT
+[ ] PCM5102 LOUT/LROUT -> PAM8403 input L
+[ ] PCM5102 AGND     -> PAM8403 input G
+[ ] NodeMCU VU       -> PAM8403 POWER +
+[ ] NodeMCU G        -> PAM8403 POWER -
+[ ] Capacitor +      -> PAM8403 POWER +
+[ ] Capacitor -      -> PAM8403 POWER -
+[ ] Speaker wire 1   -> PAM8403 LOUT +
+[ ] Speaker wire 2   -> PAM8403 LOUT -
+[ ] PAM8403 ROUT outputs are empty
+[ ] PAM8403 input R is empty
+[ ] PCM5102 A3V3/3V3 is empty
+[ ] IR receiver is not connected until its pin order is confirmed
+
+
+FIRST POWER-ON TEST
+-------------------
+
+1. Turn the PAM8403 volume knob fully counter-clockwise.
+
+2. Inspect every wire using the checklist above.
+
+3. Make sure no loose wire strands touch the next hole.
+
+4. Connect the USB cable to a 5 V / 2 A adapter.
+
+5. Wait for the NodeMCU to boot and connect to Wi-Fi.
+
+6. Slowly raise the PAM8403 volume.
+
+7. If the NodeMCU restarts, the amplifier becomes hot, or the sound is badly
+   distorted, disconnect power immediately and recheck power and speaker load.
+

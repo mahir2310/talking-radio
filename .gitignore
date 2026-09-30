@@ -1,0 +1,11 @@
+# Keep Wi-Fi credentials off GitHub.
+esp8266_talking_radio/secrets.h
+
+# Arduino and editor output.
+*.bin
+*.elf
+*.map
+.vscode/
+.idea/
+build/
+

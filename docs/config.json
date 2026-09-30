@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "repository": {
+    "owner": "YOUR_USERNAME",
+    "name": "YOUR_REPOSITORY"
+  },
+  "base_url": "https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/audio/",
+  "system": {
+    "startup": "system/startup.mp3",
+    "chime": "system/chime.mp3",
+    "time_prefix": "system/the-time-is.mp3",
+    "oclock": "system/oclock.mp3",
+    "weather_prefix": "system/current-temperature-is.mp3",
+    "degrees_celsius": "system/degrees-celsius.mp3",
+    "rain_alert": "system/rain-alert.mp3",
+    "weather_unavailable": "system/weather-unavailable.mp3"
+  },
+  "motivation": [
+    "motivation/001.mp3",
+    "motivation/002.mp3"
+  ],
+  "surah": [
+    "surah/001.mp3",
+    "surah/002.mp3"
+  ]
+}
+

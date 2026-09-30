@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Talking Radio Audio Library</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">ESP8266 talking radio</p>
+        <h1>Audio library</h1>
+        <p>
+          Use this page to verify every hosted MP3 before powering the radio.
+          Select a track, press play, and confirm that it speaks correctly.
+        </p>
+        <a class="manage-link" href="manage.html">Manage audio library</a>
+      </header>
+
+      <section class="player-panel" aria-labelledby="now-playing-heading">
+        <div>
+          <p class="eyebrow" id="now-playing-heading">Now playing</p>
+          <p id="now-playing">Select a track below</p>
+        </div>
+        <audio id="audio-player" controls preload="none"></audio>
+      </section>
+
+      <p id="status" role="status">Loading config.json…</p>
+      <div id="library"></div>
+
+      <footer>
+        This is a static GitHub Pages control and test page. Change the library
+        by editing <code>config.json</code> and uploading MP3 files.
+      </footer>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
+
