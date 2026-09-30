@@ -1,10 +1,10 @@
 {
   "version": 1,
   "repository": {
-    "owner": "YOUR_USERNAME",
-    "name": "YOUR_REPOSITORY"
+    "owner": "mahir2310",
+    "name": "talking-radio"
   },
-  "base_url": "https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/audio/",
+  "base_url": "https://mahir2310.github.io/talking-radio/audio/",
   "system": {
     "startup": "system/startup.mp3",
     "chime": "system/chime.mp3",

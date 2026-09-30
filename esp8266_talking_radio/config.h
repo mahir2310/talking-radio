@@ -8,7 +8,7 @@
 
 // After enabling GitHub Pages, replace YOUR_USERNAME and YOUR_REPOSITORY.
 const char MANIFEST_URL[] =
-    "https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/config.json";
+    "https://mahir2310.github.io/talking-radio/config.json";
 
 // Location used by Open-Meteo. Defaults to central Dhaka, Bangladesh.
 constexpr float WEATHER_LATITUDE = 23.8103f;
