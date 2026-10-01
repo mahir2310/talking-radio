@@ -77,7 +77,23 @@ uint32_t AudioFileSourceHTTPSStream::readInternal(void *data, uint32_t len,
   return static_cast<uint32_t>(amountRead);
 }
 
-bool AudioFileSourceHTTPSStream::seek(int32_t, int) { return false; }
+bool AudioFileSourceHTTPSStream::seek(int32_t pos, int dir) {
+  // WAV parsing may skip optional metadata chunks before its data chunk. The
+  // HTTPS source cannot seek backward, but it can discard bytes while moving
+  // forward through the response stream.
+  if (dir != SEEK_CUR || pos < 0) return false;
+
+  uint8_t discard[64];
+  while (pos > 0) {
+    uint32_t count = pos > static_cast<int32_t>(sizeof(discard))
+                         ? sizeof(discard)
+                         : static_cast<uint32_t>(pos);
+    uint32_t skipped = read(discard, count);
+    if (skipped == 0) return false;
+    pos -= static_cast<int32_t>(skipped);
+  }
+  return true;
+}
 
 bool AudioFileSourceHTTPSStream::close() {
   http_.end();

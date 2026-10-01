@@ -14,7 +14,9 @@ if ($mp3Files.Count -eq 0) {
 $completed = 0
 foreach ($mp3 in $mp3Files) {
     $wavPath = [System.IO.Path]::ChangeExtension($mp3.FullName, ".wav")
-    & $ffmpegCommand.Source -y -i $mp3.FullName -map_metadata -1 -ac 1 -ar 22050 -c:a pcm_s16le -f wav $wavPath
+    # -bitexact suppresses FFmpeg's optional LIST/INFO metadata chunk. Some
+    # small streaming WAV decoders handle a minimal RIFF header more reliably.
+    & $ffmpegCommand.Source -y -i $mp3.FullName -map_metadata -1 -ac 1 -ar 22050 -c:a pcm_s16le -bitexact -f wav $wavPath
     if ($LASTEXITCODE -ne 0) {
         throw "FFmpeg failed to convert $($mp3.FullName)"
     }
