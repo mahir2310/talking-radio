@@ -11,7 +11,7 @@ function titleFromPath(path) {
   return path
     .split("/")
     .pop()
-    .replace(/\.mp3$/i, "")
+    .replace(/\.wav$/i, "")
     .replaceAll("-", " ")
     .replace(/^\d+$/, (value) => `Track ${value}`);
 }
@@ -26,7 +26,7 @@ function playTrack(url, path, button) {
   player.src = url;
   player.play().catch(() => {
     statusElement.textContent =
-      "Playback did not start. Check that the MP3 exists, then press the audio play button.";
+      "Playback did not start. Check that the WAV file exists, then press the audio play button.";
   });
 }
 
@@ -73,18 +73,18 @@ async function loadLibrary() {
     const systemTracks = Object.values(config.system);
     const hourTracks = Array.from(
       { length: 24 },
-      (_, hour) => `hours/${String(hour).padStart(2, "0")}.mp3`,
+      (_, hour) => `hours/${String(hour).padStart(2, "0")}.wav`,
     );
     const numberTracks = Array.from(
       { length: 51 },
-      (_, number) => `numbers/${String(number).padStart(2, "0")}.mp3`,
+      (_, number) => `numbers/${String(number).padStart(2, "0")}.wav`,
     );
     const weatherTracks = [
-      "weather/clear.mp3",
-      "weather/cloudy.mp3",
-      "weather/fog.mp3",
-      "weather/rain.mp3",
-      "weather/thunderstorm.mp3",
+      "weather/clear.wav",
+      "weather/cloudy.wav",
+      "weather/fog.wav",
+      "weather/rain.wav",
+      "weather/thunderstorm.wav",
     ];
 
     createGroup("System announcements", systemTracks, config.base_url);

@@ -2,7 +2,7 @@
 
 AudioFileSourceHTTPSStream::AudioFileSourceHTTPSStream() {
   client_.setInsecure();
-  // Smaller TLS buffers preserve heap for the MP3 decoder.
+  // Smaller TLS buffers preserve heap for audio decoding.
   client_.setBufferSizes(1024, 512);
   client_.setTimeout(12000);
 }
@@ -18,6 +18,7 @@ bool AudioFileSourceHTTPSStream::open(const char *url) {
   close();
   position_ = 0;
   size_ = -1;
+  opened_ = false;
 
   http_.setTimeout(12000);
   http_.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
@@ -25,12 +26,16 @@ bool AudioFileSourceHTTPSStream::open(const char *url) {
   if (!http_.begin(client_, url)) return false;
 
   int status = http_.GET();
+  Serial.printf("Audio HTTP status: %d, size: %d bytes, free heap: %u\n",
+    status, http_.getSize(), ESP.getFreeHeap());
   if (status != HTTP_CODE_OK) {
     http_.end();
     return false;
   }
 
+
   size_ = http_.getSize();
+  opened_ = true;
   return true;
 }
 
@@ -44,10 +49,11 @@ uint32_t AudioFileSourceHTTPSStream::readNonBlock(void *data, uint32_t len) {
 
 uint32_t AudioFileSourceHTTPSStream::readInternal(void *data, uint32_t len,
                                                   bool nonBlocking) {
-  if (data == nullptr || !http_.connected()) return 0;
+  if (data == nullptr || !opened_) return 0;
   if (size_ >= 0 && position_ >= size_) return 0;
 
   WiFiClient *stream = http_.getStreamPtr();
+  if (stream == nullptr) return 0;
   if (size_ >= 0) {
     uint32_t remaining = static_cast<uint32_t>(size_ - position_);
     if (len > remaining) len = remaining;
@@ -75,10 +81,11 @@ bool AudioFileSourceHTTPSStream::seek(int32_t, int) { return false; }
 
 bool AudioFileSourceHTTPSStream::close() {
   http_.end();
+  opened_ = false;
   return true;
 }
 
-bool AudioFileSourceHTTPSStream::isOpen() { return http_.connected(); }
+bool AudioFileSourceHTTPSStream::isOpen() { return opened_; }
 
 uint32_t AudioFileSourceHTTPSStream::getSize() {
   return size_ < 0 ? 0 : static_cast<uint32_t>(size_);

@@ -7,7 +7,7 @@
 #include <AudioFileSource.h>
 
 // ESP8266Audio's standard HTTP source uses a plain WiFiClient. GitHub Pages
-// redirects to HTTPS, so this source uses BearSSL for public HTTPS MP3s.
+// redirects to HTTPS, so this source uses BearSSL for public HTTPS audio.
 class AudioFileSourceHTTPSStream : public AudioFileSource {
  public:
   AudioFileSourceHTTPSStream();
@@ -30,5 +30,6 @@ class AudioFileSourceHTTPSStream : public AudioFileSource {
   HTTPClient http_;
   int32_t position_ = 0;
   int32_t size_ = -1;
+  bool opened_ = false;
 };
 

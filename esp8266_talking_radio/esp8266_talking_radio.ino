@@ -31,9 +31,8 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecureBearSSL.h>
 #include <time.h>
-
-#include <AudioFileSourceBuffer.h>
-#include <AudioGeneratorMP3.h>
+#include <AudioLogger.h>
+#include <AudioGeneratorWAV.h>
 #include <AudioOutputI2S.h>
 
 #include <IRrecv.h>
@@ -53,9 +52,8 @@ constexpr uint32_t WIFI_RETRY_INTERVAL_MS = 15000;
 IRrecv irReceiver(IR_RECEIVER_PIN);
 decode_results irResult;
 
-AudioGeneratorMP3 *mp3 = nullptr;
+AudioGeneratorWAV *wav = nullptr;
 AudioFileSourceHTTPSStream *audioSource = nullptr;
-AudioFileSourceBuffer *audioBuffer = nullptr;
 AudioOutputI2S *audioOutput = nullptr;
 
 String playbackQueue[URL_QUEUE_SIZE];
@@ -137,17 +135,15 @@ String dequeue() {
 }
 
 bool audioIsRunning() {
-  return mp3 != nullptr && mp3->isRunning();
+  return wav != nullptr && wav->isRunning();
 }
 
 void stopCurrentAudio() {
-  if (mp3 != nullptr) {
-    if (mp3->isRunning()) mp3->stop();
-    delete mp3;
-    mp3 = nullptr;
+  if (wav != nullptr) {
+    if (wav->isRunning()) wav->stop();
+    delete wav;
+    wav = nullptr;
   }
-  delete audioBuffer;
-  audioBuffer = nullptr;
   delete audioSource;
   audioSource = nullptr;
 }
@@ -160,11 +156,14 @@ bool startAudio(const String &url) {
   Serial.println(url);
 
   audioSource = new AudioFileSourceHTTPSStream(url.c_str());
-  audioBuffer = new AudioFileSourceBuffer(audioSource, 4096);
-  mp3 = new AudioGeneratorMP3();
+  wav = new AudioGeneratorWAV();
 
-  if (!mp3->begin(audioBuffer, audioOutput)) {
-    Serial.println(F("Could not start MP3 stream."));
+  Serial.printf(
+      "Audio source open: %d, free heap: %u, largest free block: %u, fragmentation: %u%%\n",
+      audioSource->isOpen(), ESP.getFreeHeap(), ESP.getMaxFreeBlockSize(),
+      ESP.getHeapFragmentation());
+  if (!wav->begin(audioSource, audioOutput)) {
+    Serial.println(F("Could not start WAV stream."));
     stopCurrentAudio();
     return false;
   }
@@ -173,11 +172,11 @@ bool startAudio(const String &url) {
 
 void serviceAudio() {
   if (audioIsRunning()) {
-    if (!mp3->loop()) stopCurrentAudio();
+    if (!wav->loop()) stopCurrentAudio();
     return;
   }
 
-  if (mp3 != nullptr) stopCurrentAudio();
+  if (wav != nullptr) stopCurrentAudio();
 
   if (queueCount > 0 && WiFi.status() == WL_CONNECTED) {
     String nextUrl = dequeue();
@@ -324,18 +323,18 @@ bool loadManifest() {
 
 String twoDigitPath(const char *folder, int number) {
   char path[40];
-  snprintf(path, sizeof(path), "%s/%02d.mp3", folder, number);
+  snprintf(path, sizeof(path), "%s/%02d.wav", folder, number);
   return String(path);
 }
 
 String weatherConditionTrack(int code) {
-  if (code == 0 || code == 1) return F("weather/clear.mp3");
-  if (code == 2 || code == 3) return F("weather/cloudy.mp3");
-  if (code == 45 || code == 48) return F("weather/fog.mp3");
+  if (code == 0 || code == 1) return F("weather/clear.wav");
+  if (code == 2 || code == 3) return F("weather/cloudy.wav");
+  if (code == 45 || code == 48) return F("weather/fog.wav");
   if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
-    return F("weather/rain.mp3");
+    return F("weather/rain.wav");
   }
-  if (code >= 95) return F("weather/thunderstorm.mp3");
+  if (code >= 95) return F("weather/thunderstorm.wav");
   return String();
 }
 
@@ -549,6 +548,7 @@ void setup() {
   // Transmit-only prevents incoming USB serial traffic from fighting GPIO3,
   // which becomes the PCM5102 I2S data output after audio starts.
   Serial.begin(115200, SERIAL_8N1, SERIAL_TX_ONLY);
+  audioLogger = &Serial;
   delay(200);
   Serial.println();
   Serial.println(F("ESP8266 Talking Radio starting..."));
@@ -564,7 +564,7 @@ void setup() {
 
   if (WiFi.status() == WL_CONNECTED) {
     manifestLoaded = loadManifest();
-    refreshWeather();
+    // Fetch weather from loop() after startup audio has had a chance to begin.
     if (manifestLoaded) enqueue(startupTrack);
   }
 }

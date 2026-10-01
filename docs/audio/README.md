@@ -1,64 +1,63 @@
 # Required audio files
 
-Place your MP3 recordings in this directory using the exact layout below.
-Record them in Bangla, English, or both, but keep every filename unchanged.
+This NodeMCU ESP8266 build uses PCM WAV files to reduce decoder memory use.
+Keep the filenames below and place the files in these folders. Use standard
+PCM WAV: mono, 22,050 Hz, signed 16-bit samples.
 
 ```text
 audio/
 |-- system/
-|   |-- startup.mp3
-|   |-- chime.mp3
-|   |-- the-time-is.mp3
-|   |-- oclock.mp3
-|   |-- current-temperature-is.mp3
-|   |-- degrees-celsius.mp3
-|   |-- rain-alert.mp3
-|   `-- weather-unavailable.mp3
+|   |-- startup.wav
+|   |-- chime.wav
+|   |-- the-time-is.wav
+|   |-- oclock.wav
+|   |-- current-temperature-is.wav
+|   |-- degrees-celsius.wav
+|   |-- rain-alert.wav
+|   `-- weather-unavailable.wav
 |-- hours/
-|   |-- 00.mp3
-|   |-- 01.mp3
+|   |-- 00.wav
+|   |-- 01.wav
 |   |-- ...
-|   `-- 23.mp3
+|   `-- 23.wav
 |-- numbers/
-|   |-- 00.mp3
-|   |-- 01.mp3
+|   |-- 00.wav
+|   |-- 01.wav
 |   |-- ...
-|   `-- 50.mp3
+|   `-- 50.wav
 |-- weather/
-|   |-- clear.mp3
-|   |-- cloudy.mp3
-|   |-- fog.mp3
-|   |-- rain.mp3
-|   `-- thunderstorm.mp3
+|   |-- clear.wav
+|   |-- cloudy.wav
+|   |-- fog.wav
+|   |-- rain.wav
+|   `-- thunderstorm.wav
 |-- motivation/
-|   |-- 001.mp3
-|   `-- 002.mp3
+|   |-- 001.wav
+|   `-- 002.wav
 `-- surah/
-    |-- 001.mp3
-    `-- 002.mp3
+    |-- 001.wav
+    `-- 002.wav
 ```
 
-Suggested recording text:
+Suggested speech:
 
 | File | Suggested speech |
 |---|---|
-| `startup.mp3` | "Talking radio is ready." |
-| `the-time-is.mp3` | "The time is" |
-| `oclock.mp3` | "o'clock" |
-| `current-temperature-is.mp3` | "The current temperature is" |
-| `degrees-celsius.mp3` | "degrees Celsius" |
-| `rain-alert.mp3` | "Rain is occurring or likely soon. Please prepare." |
-| `weather-unavailable.mp3` | "Weather information is currently unavailable." |
+| `startup.wav` | Talking radio is ready. |
+| `the-time-is.wav` | The time is |
+| `oclock.wav` | o'clock |
+| `current-temperature-is.wav` | The current temperature is |
+| `degrees-celsius.wav` | degrees Celsius |
+| `rain-alert.wav` | Rain is occurring or likely soon. Please prepare. |
+| `weather-unavailable.wav` | Weather information is currently unavailable. |
 
-For 24-hour announcements, record `hours/00.mp3` through `hours/23.mp3` as
-spoken hour values. Record `numbers/00.mp3` through `numbers/50.mp3` for
-temperature readings.
+Record `hours/00.wav` through `hours/23.wav` as spoken hour values, and
+`numbers/00.wav` through `numbers/50.wav` as spoken number values. The weather
+files should say `Clear`, `Cloudy`, `Fog`, `Rain`, and `Thunderstorm`.
 
-Recommended encoding:
+To convert the generated MP3 recordings, install FFmpeg and run
+`convert_mp3_to_wav.ps1` from the project folder. It creates WAV versions next
+to the MP3s; the firmware and GitHub Pages player use the WAV versions.
 
-```powershell
-ffmpeg -i input.wav -ac 1 -ar 22050 -b:a 64k output.mp3
-```
-
-Do not upload audio that you do not have permission to redistribute.
-
+WAV files are larger than MP3 files. Keep long recordings as short as practical,
+and only upload audio that you have permission to redistribute.

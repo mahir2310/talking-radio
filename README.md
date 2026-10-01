@@ -9,7 +9,7 @@ Features:
 - Current temperature and weather condition.
 - Rain warning based on current rain or forecast probability.
 - IR buttons for time, weather, motivation, surah, volume, and stop.
-- MP3 streaming from a GitHub Pages audio library.
+- PCM WAV streaming from a GitHub Pages audio library.
 - Browser page for testing every hosted audio file.
 - Zero-cost browser manager for changing the library without reflashing.
 
@@ -17,7 +17,7 @@ Features:
 
 The project uses only free services and local software:
 
-- GitHub repository for MP3 storage.
+- GitHub repository for WAV storage.
 - GitHub Pages for HTTPS audio delivery.
 - Open-Meteo for weather data without an API key.
 - NTP for time synchronization.
@@ -93,15 +93,16 @@ instead of assuming the left-to-right order.
 
 ## 2. Prepare the audio library
 
-1. Record or obtain permitted MP3 announcements.
+1. Record or obtain permitted WAV announcements, or convert the generated MP3 files to WAV.
 2. Follow the exact file list in `docs/audio/README.md`.
-3. Encode files as mono, 22.05 kHz, 64 kbit/s MP3 where possible.
+3. Use standard PCM WAV: mono, 22.05 kHz, 16-bit samples.
 4. Put every file below `docs/audio/`.
 5. Add or remove motivation and surah filenames in `docs/config.json`.
 
-Long surah recordings can be streamed, but test them carefully. Wi-Fi
-interruption during a long stream will stop that track; the next request will
-start it from the beginning.
+WAV files are larger than MP3 files, especially for long surah recordings. Test
+long recordings carefully and keep an eye on GitHub Pages storage and transfer
+limits. Wi-Fi interruption during a stream stops that track; the next request
+starts it from the beginning.
 
 ## 3. Configure GitHub Pages
 
@@ -142,10 +143,10 @@ prepares an updated `config.json` for you.
 The safe, free update process is:
 
 1. Open `https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/manage.html`.
-2. Press **Upload motivation MP3** or **Upload surah MP3**.
-3. Sign in to GitHub if requested, choose the new MP3, and commit it.
+2. Press **Upload motivation WAV** or **Upload surah WAV**.
+3. Sign in to GitHub if requested, choose the new WAV, and commit it.
 4. Return to the manager and add the path, for example
-   `motivation/morning-003.mp3`, on a new line.
+   `motivation/morning-003.wav`, on a new line.
 5. Press **Prepare update**. This automatically increases the library version
    so GitHub's old cached audio is not reused.
 6. Press **Copy JSON**, then **Open config.json on GitHub**.
@@ -153,7 +154,7 @@ The safe, free update process is:
 8. Press the remote button assigned to `IR_RELOAD_LIBRARY`, or simply wait up
    to ten minutes.
 
-The ESP8266 reloads `config.json` every ten minutes. Therefore MP3 additions,
+The ESP8266 reloads `config.json` every ten minutes. Therefore WAV additions,
 removals, reordered playlists, and replacement recordings require no USB cable
 and no firmware reflash.
 
@@ -161,7 +162,7 @@ The manager deliberately does not request a GitHub token. Putting a repository
 token into a public static page would allow other people to copy it. GitHub's
 normal signed-in upload and edit screens provide the secure zero-cost option.
 
-If you change an MP3 but reuse its filename, GitHub's CDN may temporarily cache
+If you change a WAV but reuse its filename, GitHub's CDN may temporarily cache
 the old copy. Rename the file and update `config.json`, or wait for the cache to
 expire.
 
@@ -206,7 +207,7 @@ ESP8266 Talking Radio starting...
 Wi-Fi connected. IP: ...
 Manifest loaded: ...
 Weather: ...
-Playing: .../audio/system/startup.mp3
+Playing: .../audio/system/startup.wav
 ```
 
 ## 6. Learn and configure the IR remote
@@ -262,7 +263,7 @@ IR volume adjustment to 55%.
 
 ### No sound
 
-- Test the MP3 from the GitHub Pages browser page.
+- Test the WAV from the GitHub Pages browser page.
 - Confirm PCM5102 LOUT goes to PAM8403 left input, not its speaker output.
 - Confirm the speaker is on `L+` and `L-`, not GND.
 - Verify PCM5102 `XMT/XSMT` is high.
